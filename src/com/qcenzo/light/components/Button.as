@@ -137,7 +137,7 @@ package com.qcenzo.light.components
 		{ 
 			if (_listener != null)
 				_listener();
-			_skin.bitmapData = _overState;
+			_skin.bitmapData = _overState != null ? _overState : _outState;
 			_pressed = false;
 		}
 		

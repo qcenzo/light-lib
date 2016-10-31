@@ -25,8 +25,7 @@ package com.qcenzo.light.components
 {
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
-	import flash.display.Loader;
-	import flash.display.Sprite; 
+	import flash.display.Sprite;
 	import flash.geom.Rectangle;
 	import flash.media.Video;
 	import flash.text.TextField;
@@ -109,7 +108,7 @@ package com.qcenzo.light.components
 						}
 						if (bytes.readUnsignedByte() == 1)
 							obj.scrollRect = new Rectangle(0, 0, bytes.readUnsignedShort(), bytes.readUnsignedShort());
-						displaylist[bytes.readUnsignedShort()] = obj;
+						displaylist[bytes.readUnsignedShort()] = obj; 
 						break;
 					
 					case BITMAPX:
@@ -228,8 +227,9 @@ package com.qcenzo.light.components
 						break;
 					
 					case LOADER:
-						obj = new Loader(); 
-						obj.scrollRect = new Rectangle(0, 0, bytes.readUnsignedShort(), bytes.readUnsignedShort());
+						obj = new SimpleLoader(); 
+						obj.width = bytes.readUnsignedShort();
+						obj.height = bytes.readUnsignedShort();
 						break;
 					
 					case VIDEO:
