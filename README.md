@@ -15,4 +15,4 @@
 - The *Range* class holds a *value* and an allowed range for that *value*,  defined by *minimum*(default=0) and *maximum*(default=100) properties.
 
 ###More
-- <http://ue.qcenzo.com>
+- <http://ui.qcenzo.com>
