@@ -32,6 +32,7 @@ package com.qcenzo.light.components
 	public class Button extends Sprite	
 	{
 		private var _skin:Bitmap;
+		private var _smoothing:Boolean;
 		private var _outState:BitmapData;
 		private var _overState:BitmapData;
 		private var _downState:BitmapData;
@@ -43,7 +44,7 @@ package com.qcenzo.light.components
 		{
 			_skin = new Bitmap();
 			addChild(_skin);  
-			
+
 			super.mouseChildren = false;
 		}
 		
@@ -53,7 +54,14 @@ package com.qcenzo.light.components
 		override public function set mouseEnabled(enabled:Boolean):void
 		{
 			super.mouseEnabled = enabled;
-			_skin.bitmapData = enabled ? _outState : _disabledState;
+			
+			if (enabled)
+				state(_outState);
+			else
+			{
+				if (_disabledState != null)
+					state(_disabledState);
+			}
 		}
 		
 		override public function addChildAt(child:DisplayObject, index:int):DisplayObject
@@ -64,10 +72,12 @@ package com.qcenzo.light.components
 		override public function set height(value:Number):void
 		{
 			_skin.height = value;
+			
 			if (numChildren > 1)
 			{
 				var n:int = numChildren;
 				var c:DisplayObject;
+				
 				while (n-- > 0)
 				{
 					c = getChildAt(n);
@@ -88,12 +98,19 @@ package com.qcenzo.light.components
 			_listener = listener; 
 		}
 		
+		internal function set smoothing(value:Boolean):void
+		{
+			_smoothing = value;
+		}
+		
 		internal function set outState(state:BitmapData):void
 		{
 			_outState = state;
-			addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
-			addEventListener("releaseOutside", onMouseUpOutside);
+			
+			addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			addEventListener(MouseEvent.RELEASE_OUTSIDE, onMouseUpOutside);
 			
 			onMouseOut(null);
 		}
@@ -107,45 +124,50 @@ package com.qcenzo.light.components
 		internal function set downState(state:BitmapData):void
 		{
 			_downState = state; 
-			addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 		}
 		
 		internal function set disabledState(state:BitmapData):void
 		{
 			_disabledState = state;
 		}
+		
+		private function onMouseDown(event:MouseEvent):void
+		{
+			_pressed = true;
+			if (_downState != null)
+				state(_downState);
+		}
 
 		private function onMouseOut(event:MouseEvent):void
 		{ 
-			if (!_pressed && mouseEnabled)
-				_skin.bitmapData = _outState;
+			if (!_pressed)
+				state(_outState);
 		}
 		
 		private function onMouseOver(event:MouseEvent):void
 		{
 			if (!_pressed)
-				_skin.bitmapData = _overState;
-		}
-		
-		private function onMouseDown(event:MouseEvent):void
-		{
-			_pressed = true;
-			_skin.bitmapData = _downState;
+				state(_overState);
 		}
 		
 		private function onMouseUp(event:MouseEvent):void
 		{ 
-			if (_listener != null)
-				_listener();
-			_skin.bitmapData = _overState != null ? _overState : _outState;
+			if (_pressed && _listener != null)
+				_listener.call();
+			state(_overState != null ? _overState : _outState);
 			_pressed = false;
 		}
 		
 		private function onMouseUpOutside(event:MouseEvent):void
 		{ 
-			if (mouseEnabled)
-				_skin.bitmapData = _outState;
+			state(_outState);
 			_pressed = false;
+		}
+		
+		private function state(bitmapData:BitmapData):void
+		{
+			_skin.bitmapData = bitmapData;
+			_skin.smoothing = _smoothing;
 		}
 	}
 }

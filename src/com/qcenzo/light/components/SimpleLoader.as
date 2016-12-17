@@ -1,27 +1,54 @@
+/*
+MIT License
+
+Copyright (c) 2016 Qcenzo
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 package com.qcenzo.light.components
 {
 	import flash.display.DisplayObject;
 	import flash.display.Loader;
+	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.net.URLRequest;
+	import flash.utils.Dictionary;
 	
 	[Event(name="complete", type="flash.events.Event")]
 	
 	[Event(name="progress", type="flash.events.ProgressEvent")]
 	
-	public class SimpleLoader extends Loader
+	[Event(name="ioError", type="flash.events.IOErrorEvent")]
+	
+	public class SimpleLoader extends Sprite
 	{
-		private static const _COMPLETE_EVENT:Event = new Event("complete");
-		private static const _PROGRESS_EVENT:ProgressEvent = new ProgressEvent("progress");
-
+		private static const _cache:Dictionary = new Dictionary();
 		private var _width:Number;
 		private var _height:Number;
+		private var _loader:Loader;
 		private var _urlRequest:URLRequest;
-		private var _percent:Number;
 
 		public function SimpleLoader()
 		{
+			_loader = new Loader();
 			_urlRequest = new URLRequest();
 		}
 		
@@ -33,6 +60,9 @@ package com.qcenzo.light.components
 		override public function set width(value:Number):void
 		{
 			_width = value;
+			
+			if (_cache.hasOwnProperty(url))
+				setScaleX(_cache[url].width);
 		}
 		
 		override public function get height():Number
@@ -43,6 +73,9 @@ package com.qcenzo.light.components
 		override public function set height(value:Number):void
 		{
 			_height = value;
+			
+			if (_cache.hasOwnProperty(url))
+				setScaleY(_cache[url].height);
 		}
 		
 		public function get url():String
@@ -52,40 +85,71 @@ package com.qcenzo.light.components
 		
 		public function set url(value:String):void
 		{
+			removeChildren();
+			
+			if (_cache.hasOwnProperty(value))
+			{
+				var content:DisplayObject = _cache[value];
+				setScaleX(content.width);
+				setScaleY(content.height);
+				addChild(content);
+				dispatchEvent(new Event(Event.COMPLETE));
+				return;
+			}
+			
 			_urlRequest.url = value;
 			
-			if (!contentLoaderInfo.hasEventListener(Event.COMPLETE))
+			if (!_loader.contentLoaderInfo.hasEventListener(Event.COMPLETE))
 			{
-				contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
-				contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, onProgress);
+				_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
+				_loader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, onProgress);
+				_loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
 			}
 
-			_percent = 0;
-			
-			load(_urlRequest);
+			_loader.load(_urlRequest);
 		}
 		
-		public function get percent():Number
+		public function unloadAndStop(gc:Boolean = true):void
 		{
-			return _percent;
+			_loader.unloadAndStop(gc);
 		}
 		
-		private function onProgress(event:ProgressEvent):void
+		private function setScaleX(contentWidth:Number):void
 		{
-			_percent = event.bytesLoaded / event.bytesTotal;
-			dispatchEvent(_PROGRESS_EVENT);
+			if (_width == _width)
+				scaleX = _width / contentWidth;
+		}
+		
+		private function setScaleY(contentHeight:Number):void
+		{
+			if (_height == _height)
+				scaleY = _height / contentHeight;
 		}
 		
 		private function onComplete(event:Event):void
 		{
-			contentLoaderInfo.removeEventListener(Event.COMPLETE, onComplete);
-			contentLoaderInfo.removeEventListener(ProgressEvent.PROGRESS, onProgress);
+			_loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onComplete);
+			_loader.contentLoaderInfo.removeEventListener(ProgressEvent.PROGRESS, onProgress);
+			_loader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onIOError);
 			
-			var content:DisplayObject = contentLoaderInfo.content;
-			scaleX = _width / content.width;
-			scaleY = _height / content.height;
+			var content:DisplayObject = _loader.contentLoaderInfo.content;
+			setScaleX(content.width);
+			setScaleY(content.height);
+			addChild(content);
 			
-			dispatchEvent(_COMPLETE_EVENT);
+			_cache[_urlRequest.url] = content;
+			
+			dispatchEvent(event);
+		}
+		
+		private function onProgress(event:ProgressEvent):void
+		{
+			dispatchEvent(event);
+		}
+		
+		private function onIOError(event:IOErrorEvent):void
+		{
+			dispatchEvent(event);
 		}
 	}
 }

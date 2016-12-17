@@ -190,6 +190,7 @@ package com.qcenzo.light.components
 		{
 			var child1:DisplayObject;
 			var child2:DisplayObject;
+			
 			for (var i:int = numChildren - 1; i > index; --i)
 			{
 				child1 = getChildAt(i);

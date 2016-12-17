@@ -25,7 +25,7 @@ package com.qcenzo.light.components
 {
 	import flash.events.Event;
 
-	public class TextArea extends TextInput
+	public class TextArea extends TextInput implements IVScrollable
 	{
 		private var _yRatio:Number;
 		private var _stepSize:Number;

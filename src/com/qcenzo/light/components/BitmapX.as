@@ -34,10 +34,13 @@ package com.qcenzo.light.components
 	 */
 	public class BitmapX extends Bitmap 
 	{
+		private var _minWidth:int;
+		private var _minHeight:int;
 		private var _width:int;
 		private var _height:int;
 		private var _tlCorner:BitmapData;
 		private var _blCorner:BitmapData;
+		private var _smoothing:Boolean;
 		
 		public function BitmapX(width:int, height:int)
 		{
@@ -45,11 +48,29 @@ package com.qcenzo.light.components
 			_height = height;
 		}
 		
+		override public function get smoothing():Boolean
+		{
+			return _smoothing;
+		}
+		
+		override public function set smoothing(value:Boolean):void
+		{
+			_smoothing = value;
+		}
+		
 		override public function set width(value:Number):void
 		{
 			if (value != value || value == _width)
 				return;
+			
+			if (value < _minWidth)
+			{
+				bitmapData.dispose();
+				return;
+			}
+			
 			_width = value;
+			
 			draw();
 		}
 		
@@ -57,24 +78,39 @@ package com.qcenzo.light.components
 		{
 			if (value != value || value == _height)
 				return;
+			
+			if (value < _minHeight)
+			{
+				bitmapData.dispose();
+				return;
+			}
+			
 			_height = value;
+			
 			draw();
 		}
 		
 		public function resize(newWidth:int, newHeight:int):void
 		{
-			if (newWidth < 0 || newHeight < 0)
-				return;
 			if (_width == newWidth && _height == newHeight)
 				return;
+			
+			if (newWidth < _minWidth || newHeight < _minHeight)
+			{
+				bitmapData.dispose();
+				return;
+			}
+			
 			_width = newWidth;
 			_height = newHeight;
+			
 			draw();
 		}
 		
 		public function clone():BitmapX
 		{
 			var clone:BitmapX = new BitmapX(_width, _height);
+			clone.smoothing = _smoothing;
 			clone.setCorners(_tlCorner, _blCorner);
 			return clone;
 		}
@@ -83,13 +119,29 @@ package com.qcenzo.light.components
 		{
 			_tlCorner = topLeftCorner;
 			_blCorner = bottomLeftCorner;
-			draw();
+			
+			if (_blCorner == null)
+			{
+				_minWidth = _tlCorner.width + 1 << 1;
+				_minHeight = _tlCorner.height + 1 << 1;
+			}
+			else
+			{
+				_minWidth = _tlCorner.width > _blCorner.width ? _tlCorner.width : _blCorner.width;
+				_minWidth = _minWidth + 1 << 1;
+				
+				_minHeight = _tlCorner.height > _blCorner.height ? _tlCorner.height : _blCorner.height;
+				_minHeight = _minHeight + 1 << 1;
+			}
+			
+			draw(); 
 		}
 		
 		private function draw():void
 		{
 			if (bitmapData != null)
 				bitmapData.dispose();
+			
 			bitmapData = new BitmapData(_width, _height, true, 0);
 			
 			var w:int = _tlCorner.width;
@@ -174,6 +226,8 @@ package com.qcenzo.light.components
 				bitmapData.draw(b, m);
 				b.dispose();
 			}
+			
+			super.smoothing = _smoothing;
 		}
 	}
 }

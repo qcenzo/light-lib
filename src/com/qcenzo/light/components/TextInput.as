@@ -43,6 +43,7 @@ package com.qcenzo.light.components
 		private var _prompt:String;
 		private var _color:uint;
 		private var _reg_prompt:RegExp;
+		
 		protected var _multiline:Boolean;
 		protected var _wordWrap:Boolean;
 
@@ -76,15 +77,18 @@ package com.qcenzo.light.components
 		{
 			if (words == null || words.length == 0)
 				return;
+				
 			if (_maskWords != null)
 			{
 				addEventListener(Event.CHANGE, onChange);
 				return;
 			}
+			
 			_numMaskWords = words.length;
 			_maskWords = new Vector.<String>(_numMaskWords, true);
 			for (_i = 0; _i < _numMaskWords; ++_i)
 				_maskWords[_i] = words[_i];
+				
 			addEventListener(Event.CHANGE, onChange);
 		}
 		
@@ -97,21 +101,29 @@ package com.qcenzo.light.components
 		{
 			if (prompt == null || _REG_EMPTY_STRING.test(prompt) || (_reg_prompt != null && _reg_prompt.test(prompt)))
 				return;
+				
 			if (_prompt == null)
 			{
 				addEventListener(FocusEvent.FOCUS_IN, onFocusIn);
 				addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
 			}
+			
 			_prompt = prompt;
 			prompt = "^\\s*";
 			for (var i:int = 0, n:int = _prompt.length; i < n; ++i)
 				prompt += _prompt.charAt(i) + "\\s*";
-			prompt += "\\s*$";
-			_color = _textFormat == null ? 0 : uint(_textFormat.color); 
-			_promptColor ||= _PROMPT_COLOR;	
+			prompt += "\\s*$";			
 			_reg_prompt = new RegExp(prompt); 
 			
+			_color = _textFormat == null ? 0 : uint(_textFormat.color); 
+			_promptColor ||= _PROMPT_COLOR;	
+			
 			onFocusOut(null);
+		}
+		
+		public function get isEmpty():Boolean
+		{
+			return (_reg_prompt != null && _reg_prompt.test(text)) || _REG_EMPTY_STRING.test(text);
 		}
 		
 		private function onFocusIn(event:FocusEvent):void
@@ -129,6 +141,9 @@ package com.qcenzo.light.components
 			{
 				textColor = _promptColor;
 				text = _prompt;
+				
+				if (event != null)
+					event.stopImmediatePropagation();
 			}
 		}
 		

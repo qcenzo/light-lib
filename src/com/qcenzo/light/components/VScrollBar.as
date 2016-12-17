@@ -68,6 +68,7 @@ package com.qcenzo.light.components
 				
 				return child;
 			}
+			
 			return super.addChildAt(child, index);
 		}
 		
@@ -84,6 +85,12 @@ package com.qcenzo.light.components
 			if (end != null)
 				end.mouseEnabled = enabled; 
 		}
+		
+		[Deprecated]
+		override public function inside():void {}
+		
+		[Deprecated]
+		override public function set liveDragging(value:Boolean):void {}
 		
 		public function set autoHide(value:Boolean):void
 		{

@@ -28,20 +28,20 @@ package com.qcenzo.light.components
 	import flash.display.Sprite;
 	import flash.geom.Rectangle;
 	import flash.media.Video;
-	import flash.text.TextField;
+	import flash.text.TextField;  
 	import flash.text.TextFormat;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	
 	/**
 	 * The <code>Document</code> class is the root class used to parse raw data and rebuild dislaylists.
-	 * @see http://ue.qcenzo.com
-	 * @productversion 1.0.0
+	 * @see http://ui.qcenzo.com
+	 * @productversion 1.0.1 
 	 */
 	public class Document extends Sprite
 	{
 		private static var _bitmapDataPool:Vector.<BitmapData>; 
-		// component enums
+		// component type enums
 	 	private static const SPRITE:uint = 0;
 		private static const GROUP:uint = 1;
 		private static const VSCROLLBAR:uint = 2;
@@ -67,9 +67,12 @@ package com.qcenzo.light.components
 		private static const BOLD:uint = 2;
 		private static const ITALIC_BOLD:uint = 3;
 		
-		public function Document(bytes:ByteArray)
+		public function Document(bytes:ByteArray, smoothing:Boolean = true)
 		{
 			bytes.uncompress("lzma");
+			
+			var dpi:Number = bytes.readUnsignedShort();
+			dpi /= 72;
 			
 			var displaylist:Dictionary = new Dictionary();
 			displaylist[-1] = this;
@@ -98,10 +101,19 @@ package com.qcenzo.light.components
 
 						switch (type)
 						{
-							case SPRITE:		obj = new Sprite();			break;
-							case GROUP:			obj = new Group();			break;
-							case BUTTON: 		obj = new Button();			break;
-							case VSCROLLBAR:	obj = new VScrollBar();		break;
+							case SPRITE:		
+								obj = new Sprite();			
+								break;
+							case GROUP:			
+								obj = new Group();			
+								break;
+							case VSCROLLBAR:	
+								obj = new VScrollBar();		
+								break;
+							case BUTTON: 	
+								obj = new Button();	
+								obj.smoothing = smoothing;
+								break;
 							case SLIDER:
 								obj = bytes.readUnsignedByte() == 0 ? new HSlider() : new VSlider(); 
 								break;	 
@@ -109,6 +121,7 @@ package com.qcenzo.light.components
 						if (bytes.readUnsignedByte() == 1)
 							obj.scrollRect = new Rectangle(0, 0, bytes.readUnsignedShort(), bytes.readUnsignedShort());
 						displaylist[bytes.readUnsignedShort()] = obj; 
+						
 						break;
 					
 					case BITMAPX:
@@ -143,7 +156,9 @@ package com.qcenzo.light.components
 						}
 						
 						obj = new BitmapX(bytes.readUnsignedShort(), bytes.readUnsignedShort());
-						obj.setCorners(tlCorner, blCorner);	  
+						obj.smoothing = smoothing;
+						obj.setCorners(tlCorner, blCorner);	 
+						
 						break;
 					
 					case BUTTON_STATE_OUT:
@@ -168,14 +183,24 @@ package com.qcenzo.light.components
 						
 						switch (type)
 						{
-							case BUTTON_STATE_OUT:		displaylist[bytes.readShort()].outState = obj;		continue;
-							case BUTTON_STATE_OVER:		displaylist[bytes.readShort()].overState = obj;		continue;
-							case BUTTON_STATE_DOWN:		displaylist[bytes.readShort()].downState = obj;		continue;
-							case BUTTON_STATE_DISABLED:	displaylist[bytes.readShort()].disabledState = obj;	continue;
+							case BUTTON_STATE_OUT:		
+								displaylist[bytes.readShort()].outState = obj;		
+								continue;
+							case BUTTON_STATE_OVER:		
+								displaylist[bytes.readShort()].overState = obj;		
+								continue;
+							case BUTTON_STATE_DOWN:		
+								displaylist[bytes.readShort()].downState = obj;		
+								continue;
+							case BUTTON_STATE_DISABLED:	
+								displaylist[bytes.readShort()].disabledState = obj;	
+								continue;
 								
 							default:
 								obj = new Bitmap(obj as BitmapData);
+								obj.smoothing = smoothing;
 						}
+						
 						break;
 						
 					case TEXTINPUT:
@@ -197,7 +222,7 @@ package com.qcenzo.light.components
 								tfmt.bold = true;
 								break;
 						}
-						tfmt.size = bytes.readUnsignedShort();
+						tfmt.size = bytes.readUnsignedShort() * dpi; 				
 						tfmt.color = bytes.readUnsignedInt();
 						switch (bytes.readUnsignedByte())
 						{
@@ -214,26 +239,36 @@ package com.qcenzo.light.components
 						
 						switch (type)
 						{
-							case TEXTINPUT:		obj = new TextInput(); 		break;
-							case TEXTAREA:		obj = new TextArea();		break;
+							case TEXTINPUT:		
+								obj = new TextInput(); 		
+								break;
+							case TEXTAREA:		
+								obj = new TextArea();		
+								break;
 							
 							default:
 								obj = new TextField();
 								obj.selectable = false;
 						}
-						obj.defaultTextFormat = tfmt;		
+						
+						obj.defaultTextFormat = tfmt;	
 						obj.width = bytes.readUnsignedShort();
 						obj.height = bytes.readUnsignedShort();
+						
 						break;
 					
 					case LOADER:
+					
 						obj = new SimpleLoader(); 
 						obj.width = bytes.readUnsignedShort();
 						obj.height = bytes.readUnsignedShort();
+						
 						break;
 					
 					case VIDEO:
+					
 						obj = new Video(bytes.readUnsignedShort(), bytes.readUnsignedShort()); 
+						
 						break;
 				}
 				
@@ -261,6 +296,7 @@ package com.qcenzo.light.components
 			var b:BitmapData;
 			 
 			_bitmapDataPool = new Vector.<BitmapData>(n, true);
+			
 			for (var i:int = 0; i < n; i++)
 			{
 				b = new BitmapData(bytes.readUnsignedShort(), bytes.readUnsignedShort(), true, 0);

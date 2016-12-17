@@ -28,15 +28,12 @@ package com.qcenzo.light.components
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
-	/**
-	 * Dispatched when <code>value</code> property is changing.
-	 * 
-	 */
-	[Event(name="change", type="flash.events.Event")]
-	
 	public class Slider extends Range
 	{
-		private static const _EVENT_CHANGE:Event = new Event(Event.CHANGE);
+		private var _percent:Number;
+		private var _listener:Function;
+		private var _trackedDistance:Number;
+		
 		protected var _liveDragging:Boolean;
 		protected var _inside:Boolean;
 		protected var _p:Number;
@@ -61,6 +58,7 @@ package com.qcenzo.light.components
 				{
 					case -1:
 						thumb = super.addChildAt(child, 0) as Button;
+						thumb.cacheAsBitmap = true;
 						break;
 					case -2:
 						track = super.addChildAt(child, 0) as Sprite;
@@ -72,6 +70,7 @@ package com.qcenzo.light.components
 				
 				return child;
 			}
+			
 			return super.addChildAt(child, index);
 		}
 		
@@ -85,38 +84,65 @@ package com.qcenzo.light.components
 		
 		override public function set value(value:Number):void
 		{
+			if (value != value)
+				return;
+			
 			if (stage == null)
 			{
 				_value = value;
 				return;
 			}
 			
-			if (_p == _p && value == _value)
-			{
-				_p = NaN;
-				return;
-			}
-			
-			if (value != value || value <= _minimum)
+			if (value <= _minimum)
 			{
 				_value = _minimum;
+				_percent = 0;
+				_trackedDistance = 0;
 				_p = _p0;
 			}
 			else if (value >= _maximum)
 			{
 				_value = _maximum;
+				_percent = 1;
+				_trackedDistance = _distance;
 				_p = _p1;
 			}
 			else
 			{
 				_value = value;
-				_p = _p0 + _distance * (_value - _minimum) / length;
+				_percent = (_value - _minimum) / length;
+				_trackedDistance = _distance * _percent;
+				_p = _p0 + _trackedDistance;
 			}
+			
+			updateThumbPosition();
 		}
 		
 		public function inside():void
 		{
 			_inside = true;
+			if (stage != null)
+				initVars();
+		}
+		
+		public function set onChange(listener:Function):void
+		{
+			_listener = listener;
+		}
+		
+		public function get trackedDistance():Number
+		{
+			return _trackedDistance;
+		}
+		
+		public function get distance():Number
+		{
+			return _distance;
+		}
+		
+		public function get percent():Number
+		{
+			return _percent;
 		}
 		
 		public function get liveDragging():Boolean
@@ -137,8 +163,12 @@ package com.qcenzo.light.components
 		
 		protected function updateValue():void
 		{
-			_value = _minimum + length * (_p - _p0) / _distance;
-			dispatchEvent(_EVENT_CHANGE);
+			_trackedDistance = _p - _p0;
+			_percent = _trackedDistance / _distance;
+			_value = _minimum + length * _percent;
+			
+			if (_listener != null)
+				_listener.call();
 		}
 		
 		protected function initVars():void 
@@ -153,6 +183,10 @@ package com.qcenzo.light.components
 		{
 		}
 		
+		protected function updateThumbPosition():void
+		{
+		}
+		
 		private function init(event:Event):void
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
@@ -161,7 +195,12 @@ package com.qcenzo.light.components
 			initListeners();
 			
 			if (_value == _value)
+			{
 				value = _value;
+				
+				if (_listener != null)
+					_listener.call();
+			}
 		}
 		
 		private function startDragHandler(event:MouseEvent):void
@@ -174,6 +213,8 @@ package com.qcenzo.light.components
 		private function doDrag(event:MouseEvent):void
 		{
 			dragTo();
+			updateThumbPosition();
+			
 			if (_liveDragging)
 				updateValue();
 		}
@@ -191,6 +232,14 @@ package com.qcenzo.light.components
 		private function onClickTrack(event:MouseEvent):void
 		{
 			jumpTo();
+			
+			if (_p < _p0)
+				_p = _p0;
+			else if (_p > _p1)
+				_p = _p1;
+			
+			updateThumbPosition();
+			
 			updateValue();
 		}
 	}

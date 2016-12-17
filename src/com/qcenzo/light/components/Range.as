@@ -34,6 +34,7 @@ package com.qcenzo.light.components
 	{
 		private var _length:Number;
 		private var _lengthChanged:Boolean;
+		
 		protected var _minimum:Number;
 		protected var _maximum:Number;
 		protected var _value:Number;

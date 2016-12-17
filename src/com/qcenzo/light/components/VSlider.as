@@ -30,13 +30,6 @@ package com.qcenzo.light.components
 			super();
 		}
 		
-		override public function set value(value:Number):void
-		{
-			super.value = value;
-			if (_p == _p)
-				thumb.y = _p - _offset;
-		}
-		
 		override protected function initVars():void
 		{
 			_p0 = track.y;
@@ -53,12 +46,6 @@ package com.qcenzo.light.components
 		override protected function jumpTo():void
 		{
 			_p = thumb.y + thumb.mouseY;
-			if (_p < _p0)
-				_p = _p0;
-			else if (_p > _p1)
-				_p = _p1;
-			
-			thumb.y = _p - _offset;
 		}
 		
 		override protected function dragTo():void
@@ -69,7 +56,10 @@ package com.qcenzo.light.components
 				_p = _p1;
 			else
 				_p = mouseY;
-			
+		}
+		
+		override protected function updateThumbPosition():void
+		{
 			thumb.y = _p - _offset;
 		}
 	}

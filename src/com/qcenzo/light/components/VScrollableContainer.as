@@ -26,7 +26,7 @@ package com.qcenzo.light.components
 	import flash.display.Sprite;
 	import flash.geom.Rectangle;
 	
-	internal class VScrollableContainer extends Sprite
+	internal class VScrollableContainer extends Sprite implements IVScrollable
 	{
 		private var _scrollRect:Rectangle;
 		private var _stepSize:Number;
@@ -101,6 +101,7 @@ package com.qcenzo.light.components
 			
 			if (_heightRatio == _tempRatio)
 				return;
+				
 			_heightRatio = _tempRatio;
 			_vscrollBar.resize(_heightRatio); 
 			
@@ -117,9 +118,11 @@ package com.qcenzo.light.components
 		{
 			if (_scrollRect.y - _stepSize < 0)
 				return false;
+				
 			_scrollRect.y -= _stepSize;
 			scrollRect = _scrollRect;
 			_yRatio = _scrollRect.y / _maxScrollY;
+			
 			return true; 
 		}
 		
@@ -127,9 +130,11 @@ package com.qcenzo.light.components
 		{
 			if (_yRatio == yRatio)
 				return false;
+				
 			_yRatio = yRatio;
 			_scrollRect.y = _maxScrollY * _yRatio;
 			scrollRect = _scrollRect;
+			
 			return true;
 		}
 		
@@ -137,9 +142,11 @@ package com.qcenzo.light.components
 		{
 			if (_scrollRect.y + _stepSize > _maxScrollY)
 				return false;
+				
 			_scrollRect.y +=_stepSize;
 			scrollRect = _scrollRect;
 			_yRatio = _scrollRect.y / _maxScrollY;
+			
 			return true;
 		}
 		
