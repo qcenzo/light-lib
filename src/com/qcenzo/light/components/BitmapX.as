@@ -32,7 +32,7 @@ package com.qcenzo.light.components
 	 * The <code>BitmapX</code> class represents display objects that represent centrosymmetric or zygomorphous bitmap images, 
 	 * these can be used as the background image of some panels and grids.
 	 */
-	public class BitmapX extends Bitmap 
+	public class BitmapX extends Bitmap  
 	{
 		private var _minWidth:int;
 		private var _minHeight:int;

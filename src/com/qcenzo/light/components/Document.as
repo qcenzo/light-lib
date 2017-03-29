@@ -28,14 +28,14 @@ package com.qcenzo.light.components
 	import flash.display.Sprite;
 	import flash.geom.Rectangle;
 	import flash.media.Video;
-	import flash.text.TextField;  
+	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	
 	/**
 	 * The <code>Document</code> class is the root class used to parse raw data and rebuild dislaylists.
-	 * @see http://ui.qcenzo.com
+	 * @see http://light.qcenzo.com
 	 * @productversion 1.0.1 
 	 */
 	public class Document extends Sprite
@@ -71,9 +71,6 @@ package com.qcenzo.light.components
 		{
 			bytes.uncompress("lzma");
 			
-			var dpi:Number = bytes.readUnsignedShort();
-			dpi /= 72;
-			
 			var displaylist:Dictionary = new Dictionary();
 			displaylist[-1] = this;
 			
@@ -87,6 +84,7 @@ package com.qcenzo.light.components
 			var namelen:uint;
 			var varname:String;
 			var tfmt:TextFormat;
+			var text:String;
 			
 			for (var i:uint = 0; i < numchildren; ++i)
 			{
@@ -206,7 +204,7 @@ package com.qcenzo.light.components
 					case TEXTINPUT:
 					case TEXTAREA:
 					case TEXTFIELD:
-						
+						bytes.position++;
 						tfmt = new TextFormat();
 						tfmt.font = bytes.readMultiByte(bytes.readUnsignedByte(), "cn-gb");
 						switch (bytes.readUnsignedByte())
@@ -222,7 +220,7 @@ package com.qcenzo.light.components
 								tfmt.bold = true;
 								break;
 						}
-						tfmt.size = bytes.readUnsignedShort() * dpi; 				
+						tfmt.size = bytes.readUnsignedShort(); 				
 						tfmt.color = bytes.readUnsignedInt();
 						switch (bytes.readUnsignedByte())
 						{
@@ -236,22 +234,29 @@ package com.qcenzo.light.components
 								tfmt.align = "right";
 								break;
 						}
-						
+						 
+						text = bytes.readMultiByte(bytes.readUnsignedShort(), "cn-gb");
+						 
 						switch (type)
 						{
 							case TEXTINPUT:		
-								obj = new TextInput(); 		
+								obj = new TextInput();
+								obj.defaultTextFormat = tfmt;
+								obj.prompt = text;
 								break;
 							case TEXTAREA:		
-								obj = new TextArea();		
+								obj = new TextArea();	
+								obj.defaultTextFormat = tfmt;
+								obj.prompt = text;
 								break;
 							
 							default:
 								obj = new TextField();
+								obj.defaultTextFormat = tfmt;
 								obj.selectable = false;
+								obj.text = text;
 						}
-						
-						obj.defaultTextFormat = tfmt;	
+						 
 						obj.width = bytes.readUnsignedShort();
 						obj.height = bytes.readUnsignedShort();
 						
@@ -289,6 +294,9 @@ package com.qcenzo.light.components
 	
 		public static function initPublicBitmapDataPool(bytes:ByteArray):void
 		{
+			if (_bitmapDataPool != null)
+				return;
+			
 			bytes.uncompress("lzma");
 			 
 			var n:int = bytes.readUnsignedShort();

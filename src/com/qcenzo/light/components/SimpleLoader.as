@@ -30,7 +30,6 @@ package com.qcenzo.light.components
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.net.URLRequest;
-	import flash.utils.Dictionary;
 	
 	[Event(name="complete", type="flash.events.Event")]
 	
@@ -40,7 +39,6 @@ package com.qcenzo.light.components
 	
 	public class SimpleLoader extends Sprite
 	{
-		private static const _cache:Dictionary = new Dictionary();
 		private var _width:Number;
 		private var _height:Number;
 		private var _loader:Loader;
@@ -60,9 +58,6 @@ package com.qcenzo.light.components
 		override public function set width(value:Number):void
 		{
 			_width = value;
-			
-			if (_cache.hasOwnProperty(url))
-				setScaleX(_cache[url].width);
 		}
 		
 		override public function get height():Number
@@ -73,9 +68,6 @@ package com.qcenzo.light.components
 		override public function set height(value:Number):void
 		{
 			_height = value;
-			
-			if (_cache.hasOwnProperty(url))
-				setScaleY(_cache[url].height);
 		}
 		
 		public function get url():String
@@ -86,16 +78,6 @@ package com.qcenzo.light.components
 		public function set url(value:String):void
 		{
 			removeChildren();
-			
-			if (_cache.hasOwnProperty(value))
-			{
-				var content:DisplayObject = _cache[value];
-				setScaleX(content.width);
-				setScaleY(content.height);
-				addChild(content);
-				dispatchEvent(new Event(Event.COMPLETE));
-				return;
-			}
 			
 			_urlRequest.url = value;
 			
@@ -136,8 +118,6 @@ package com.qcenzo.light.components
 			setScaleX(content.width);
 			setScaleY(content.height);
 			addChild(content);
-			
-			_cache[_urlRequest.url] = content;
 			
 			dispatchEvent(event);
 		}

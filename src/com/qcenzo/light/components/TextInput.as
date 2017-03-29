@@ -63,6 +63,18 @@ package com.qcenzo.light.components
 		[Deprecated]	
 		override public function set wordWrap(value:Boolean):void {}
 		
+		override public function set displayAsPassword(value:Boolean):void
+		{
+			super.displayAsPassword = value;
+			
+			if (value && _prompt != null)
+			{
+				removeEventListener(FocusEvent.FOCUS_IN, onFocusIn);
+				removeEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
+				onFocusIn(null); 
+			}
+		}
+		
 		override public function set defaultTextFormat(format:TextFormat):void
 		{	
 			super.defaultTextFormat = _textFormat = format;
@@ -70,7 +82,7 @@ package com.qcenzo.light.components
 		
 		override public function get defaultTextFormat():TextFormat
 		{
-			return _textFormat;
+			return _textFormat; 
 		}
 		
 		public function set maskWords(words:Vector.<String>):void
