@@ -1,18 +1,18 @@
-##Qcenzo *light* UI Component Library##
+## Qcenzo *light* UI Component Library ##
 2016/10/6 11:55:15 
 
-###Version###
+### Version ###
 1.0.1
 
-###Package Diagram###
+### Package Diagram ###
 ![](http://www.qcenzo.com/2016/imgs/packagediag.jpg)
 
-###Class Diagram###
+### Class Diagram ###
 ![](http://www.qcenzo.com/2016/imgs/classdiag.jpg) 
 
 - The *Document* class is the root class used to parse raw data and rebuild displaylists.
 - The *BitmapX* class represents display objects that represent centrosymmetric or zygomorphous bitmap images,  these can be used as the background image of some panels and grids.
 - The *Range* class holds a *value* and an allowed range for that *value*,  defined by *minimum*(default=0) and *maximum*(default=100) properties.
 
-###More###
+### More ###
 - <http://light.qcenzo.com>
