@@ -1,5 +1,5 @@
-## Qcenzo *light* UI Component Library (V1.0.1) ##
-2016/10/6 11:55:15 
+## Qcenzo *light* UI Component Library ##
+2016/10/6 11:55:15 (v1.0.1)
 
 ### Runtime Version ###
 - Flash player 11.3
