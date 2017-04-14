@@ -1,8 +1,9 @@
 ## Qcenzo *light* UI Component Library ##
 2016/10/6 11:55:15 
 
-### Version ###
-1.0.1
+### Runtime Version ###
+- Flash player 11.3
+- AIR 3.3
 
 ### Package Diagram ###
 ![](http://www.qcenzo.com/2016/imgs/packagediag.jpg)
