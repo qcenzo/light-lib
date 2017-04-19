@@ -43,6 +43,7 @@ package com.qcenzo.light.components
 		private var _prompt:String;
 		private var _color:uint;
 		private var _reg_prompt:RegExp;
+		private var _displayAspwd:Boolean;
 		
 		protected var _multiline:Boolean;
 		protected var _wordWrap:Boolean;
@@ -65,14 +66,7 @@ package com.qcenzo.light.components
 		
 		override public function set displayAsPassword(value:Boolean):void
 		{
-			super.displayAsPassword = value;
-			
-			if (value && _prompt != null)
-			{
-				removeEventListener(FocusEvent.FOCUS_IN, onFocusIn);
-				removeEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
-				onFocusIn(null); 
-			}
+			_displayAspwd = value;
 		}
 		
 		override public function set defaultTextFormat(format:TextFormat):void
@@ -144,6 +138,7 @@ package com.qcenzo.light.components
 			{
 				textColor = _color;
 				text = "";
+				super.displayAsPassword = _displayAspwd;
 			}
 		}
 		
@@ -153,6 +148,7 @@ package com.qcenzo.light.components
 			{
 				textColor = _promptColor;
 				text = _prompt;
+				super.displayAsPassword = false;
 				
 				if (event != null)
 					event.stopImmediatePropagation();
