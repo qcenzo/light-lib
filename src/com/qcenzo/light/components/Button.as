@@ -110,7 +110,7 @@ package com.qcenzo.light.components
 			addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
-			addEventListener(MouseEvent.RELEASE_OUTSIDE, onMouseUpOutside);
+			addEventListener("releaseOutside", onMouseUpOutside);
 			
 			onMouseOut(null);
 		}
