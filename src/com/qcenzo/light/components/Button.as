@@ -28,6 +28,7 @@ package com.qcenzo.light.components
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
+	import flash.geom.Rectangle;
 	
 	public class Button extends Sprite	
 	{
@@ -67,30 +68,6 @@ package com.qcenzo.light.components
 		override public function addChildAt(child:DisplayObject, index:int):DisplayObject
 		{
 			return addChild(child);
-		}
-		
-		override public function set height(value:Number):void
-		{
-			_skin.height = value;
-			
-			if (numChildren > 1)
-			{
-				var n:int = numChildren;
-				var c:DisplayObject;
-				
-				while (n-- > 0)
-				{
-					c = getChildAt(n);
-					if (c == _skin)
-						continue;
-					c.y = value - c.height >> 1;
-				}
-			}
-		}
-		
-		override public function get height():Number
-		{
-			return _skin.height;
 		}
 		
 		public function set onClick(listener:Function):void

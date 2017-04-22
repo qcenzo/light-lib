@@ -23,7 +23,7 @@ SOFTWARE.
 */
 package com.qcenzo.light.components
 {
-	import flash.display.DisplayObject;
+	import flash.display.DisplayObject; 
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -31,7 +31,7 @@ package com.qcenzo.light.components
 	public class Slider extends Range
 	{
 		private var _percent:Number;
-		private var _listener:Function;
+		private var _onChange:Function;
 		private var _trackedDistance:Number;
 		
 		protected var _liveDragging:Boolean;
@@ -127,7 +127,7 @@ package com.qcenzo.light.components
 		
 		public function set onChange(listener:Function):void
 		{
-			_listener = listener;
+			_onChange = listener;
 		}
 		
 		public function get trackedDistance():Number
@@ -167,8 +167,8 @@ package com.qcenzo.light.components
 			_percent = _trackedDistance / _distance;
 			_value = _minimum + length * _percent;
 			
-			if (_listener != null)
-				_listener.call();
+			if (_onChange != null)
+				_onChange.call();
 		}
 		
 		protected function initVars():void 
@@ -198,8 +198,8 @@ package com.qcenzo.light.components
 			{
 				value = _value;
 				
-				if (_listener != null)
-					_listener.call();
+				if (_onChange != null)
+					_onChange.call();
 			}
 		}
 		
