@@ -32,9 +32,7 @@ package com.qcenzo.light.components
 	import flash.net.URLRequest;
 	
 	[Event(name="complete", type="flash.events.Event")]
-	
 	[Event(name="progress", type="flash.events.ProgressEvent")]
-	
 	[Event(name="ioError", type="flash.events.IOErrorEvent")]
 	
 	public class SimpleLoader extends Sprite

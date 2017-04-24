@@ -41,7 +41,7 @@ package com.qcenzo.light.components
 		
 		public function Range()
 		{
-			_minimum = 0;
+			_minimum = _value = 0;
 			_length = _maximum = 100;
 		}
 		

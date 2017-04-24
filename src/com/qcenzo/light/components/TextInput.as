@@ -32,7 +32,9 @@ package com.qcenzo.light.components
 	{
 		private static const _REG_EMPTY_STRING:RegExp = /^\s*$/; 
 		private static const _PROMPT_COLOR:uint = 0xADADAD;
+		
 		private static var _maskWords:Vector.<String>;
+		
 		private var _numMaskWords:int;
 		private var _i:int;
 		private var _index:int;
@@ -50,7 +52,7 @@ package com.qcenzo.light.components
 
 		public function TextInput()
 		{			
-			super.type = "input";
+			super.type = "input"; 
 			super.multiline = _multiline;
 			super.wordWrap = _wordWrap;
 		}

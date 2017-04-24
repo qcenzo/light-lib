@@ -27,7 +27,7 @@ package com.qcenzo.light.components
 	{
 		public function VSlider() 
 		{
-			super();
+			super(); 
 		}
 		
 		override protected function initVars():void

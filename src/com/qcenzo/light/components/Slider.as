@@ -47,7 +47,8 @@ package com.qcenzo.light.components
 		
 		public function Slider()
 		{
-			super();
+			_liveDragging = true;
+			_inside = true;
 		}
 		
 		override public function addChildAt(child:DisplayObject, index:int):DisplayObject
@@ -66,7 +67,7 @@ package com.qcenzo.light.components
 				}
 				
 				if (thumb != null && track != null)
-					addEventListener(Event.ADDED_TO_STAGE, init);
+						addEventListener(Event.ADDED_TO_STAGE, init);
 				
 				return child;
 			}
