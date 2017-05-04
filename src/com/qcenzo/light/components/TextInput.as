@@ -78,14 +78,7 @@ package com.qcenzo.light.components
 		
 		override public function get defaultTextFormat():TextFormat
 		{
-			return _textFormat; 
-		}
-		
-		override public function set text(value:String):void
-		{
-			super.text = value;
-			
-			onFocusOut(null);
+			return _textFormat;  
 		}
 		
 		public function set maskWords(words:Vector.<String>):void
