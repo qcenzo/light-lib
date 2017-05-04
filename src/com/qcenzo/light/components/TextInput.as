@@ -81,6 +81,13 @@ package com.qcenzo.light.components
 			return _textFormat; 
 		}
 		
+		override public function set text(value:String):void
+		{
+			super.text = value;
+			
+			onFocusOut(null);
+		}
+		
 		public function set maskWords(words:Vector.<String>):void
 		{
 			if (words == null || words.length == 0)
@@ -139,7 +146,7 @@ package com.qcenzo.light.components
 			if (_reg_prompt.test(text))
 			{
 				textColor = _color;
-				text = "";
+				super.text = "";
 				super.displayAsPassword = _displayAspwd;
 			}
 		}
@@ -149,7 +156,7 @@ package com.qcenzo.light.components
 			if (_REG_EMPTY_STRING.test(text))
 			{
 				textColor = _promptColor;
-				text = _prompt;
+				super.text = _prompt;
 				super.displayAsPassword = false;
 				
 				if (event != null)
