@@ -25,6 +25,7 @@ package com.qcenzo.light.components
 {
 	import flash.events.Event;
 	import flash.events.FocusEvent;
+	import flash.events.KeyboardEvent;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	
@@ -46,6 +47,7 @@ package com.qcenzo.light.components
 		private var _color:uint;
 		private var _reg_prompt:RegExp;
 		private var _displayAspwd:Boolean;
+		private var _listener:Function;
 		
 		protected var _multiline:Boolean;
 		protected var _wordWrap:Boolean;
@@ -132,6 +134,32 @@ package com.qcenzo.light.components
 		public function get isEmpty():Boolean
 		{
 			return (_reg_prompt != null && _reg_prompt.test(text)) || _REG_EMPTY_STRING.test(text);
+		}
+		
+		public function set caretIndex(index:int):void
+		{
+			setSelection(index, index);   
+		}
+		
+		public function set onEnterKeyDown(listener:Function):void
+		{
+			_listener = listener;
+			if (listener == null)
+			{
+				if (hasEventListener(KeyboardEvent.KEY_DOWN))
+					removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			}
+			else
+			{
+				if (!hasEventListener(KeyboardEvent.KEY_DOWN))
+					addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			}
+		}
+		
+		private function onKeyDown(event:KeyboardEvent):void
+		{
+			if (event.keyCode == 13 && _listener != null)
+				_listener();
 		}
 		
 		private function onFocusIn(event:FocusEvent):void
