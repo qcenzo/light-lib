@@ -195,13 +195,7 @@ package com.qcenzo.light.components
 			initVars();
 			initListeners();
 			
-			if (_value == _value)
-			{
-				value = _value;
-				
-				if (_onChange != null)
-					_onChange.call();
-			}
+			value = _value;
 		}
 		
 		private function startDragHandler(event:MouseEvent):void

@@ -30,6 +30,7 @@ package com.qcenzo.light.components
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.net.URLRequest;
+	import flash.utils.getTimer;
 	
 	[Event(name="complete", type="flash.events.Event")]
 	[Event(name="progress", type="flash.events.ProgressEvent")]
@@ -41,11 +42,14 @@ package com.qcenzo.light.components
 		private var _height:Number;
 		private var _loader:Loader;
 		private var _urlRequest:URLRequest;
+		private var _tryReloadTime:int;
+		private var _time:int;
 
 		public function SimpleLoader()
 		{
 			_loader = new Loader();
 			_urlRequest = new URLRequest();
+			_tryReloadTime = -1;
 		}
 		
 		override public function get width():Number
@@ -66,6 +70,11 @@ package com.qcenzo.light.components
 		override public function set height(value:Number):void
 		{
 			_height = value;
+		}
+		
+		public function set tryReloadTime(sec:int):void
+		{
+			_tryReloadTime = 1000 * sec;
 		}
 		
 		public function get url():String
@@ -113,9 +122,14 @@ package com.qcenzo.light.components
 			_loader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onIOError);
 			
 			var content:DisplayObject = _loader.contentLoaderInfo.content;
+			if (content.hasOwnProperty("smoothing"))
+				content["smoothing"] = true;
 			setScaleX(content.width);
 			setScaleY(content.height);
 			addChild(content);
+			
+			if (_tryReloadTime != -1)
+				_time = 0;
 			
 			dispatchEvent(event);
 		}
@@ -127,6 +141,18 @@ package com.qcenzo.light.components
 		
 		private function onIOError(event:IOErrorEvent):void
 		{
+			if (_tryReloadTime != -1)
+			{
+				if (_time == 0 || getTimer() - _time < _tryReloadTime)
+				{
+					_time ||= getTimer();
+					_loader.load(_urlRequest);
+					return;
+				}
+				
+				_time = 0;
+			}
+			
 			dispatchEvent(event);
 		}
 	}
