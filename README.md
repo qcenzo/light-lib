@@ -1,4 +1,4 @@
-## Qcenzo *light* UI Component Library ##
+## Qcenzo *Light* UI Component Library ##
 2016/10/6 11:55:15 
 
 ### Runtime Version ###
