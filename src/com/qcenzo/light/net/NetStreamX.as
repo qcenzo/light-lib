@@ -80,7 +80,7 @@ package com.qcenzo.light.net
 		public function onTextData(info:Object):void
 		{
 			if (info.hasOwnProperty("handler"))
-				pui[info.handler].apply(null, info.parameters);
+				pui[info.handler].apply(this, info.parameters);
 		}
 		
 		private function setupPlayer():void
