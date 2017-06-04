@@ -6,10 +6,10 @@
 - AIR 3.3
 
 ### Package Diagram ###
-![](http://www.qcenzo.com/2016/imgs/packagediag.jpg)
+![](http://www.qcenzo.com/2017/ui/images/light_pkgdiag.jpg)
 
 ### Class Diagram ###
-![](http://www.qcenzo.com/2016/imgs/classdiag.jpg) 
+![](http://www.qcenzo.com/2017/ui/images/light_classdiag.jpg) 
 
 - The *Document* class is the root class used to parse raw data and rebuild displaylists.
 - The *BitmapX* class represents display objects that represent centrosymmetric or zygomorphous bitmap images,  these can be used as the background image of some panels and grids.
